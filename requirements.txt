@@ -1,0 +1,7 @@
+streamlit
+openlocationcode
+shapely
+geopy
+folium
+streamlit-folium
+gdown
