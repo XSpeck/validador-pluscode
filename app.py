@@ -103,10 +103,11 @@ if plus_code_input:
         if is_close:
             st.success(f"✅ O ponto está a {dist_m:.1f} metros da fibra mais proxima")
         else:
-            st.error(f"❌ O ponto está a mais de 25 metros de qualquer fibra.{dist_m:.1f}")
+            st.error(f"❌ O ponto está a mais de 25 metros de qualquer fibra.")
 
     except Exception as e:
         st.error(f"Erro: {e}")
+
 
 
 
