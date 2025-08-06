@@ -13,7 +13,7 @@ import gdown
 # ======================
 file_id = "1tuxvnc-2FHVVjtLHJ34LFpU3Uq5jiVul"
 kml_path = "REDE_CLONIX.kml"
-dist_threshold_meters = 100
+dist_threshold_meters = 25
 reference_area = "Criciúma, Brazil"
 
 # ======================
@@ -103,9 +103,10 @@ if plus_code_input:
         if is_close:
             st.success(f"✅ O ponto está a {dist_m:.1f} metros da fibra mais proxima")
         else:
-            st.error("❌ O ponto está a mais de 100 metros de qualquer fibra.")
+            st.error("❌ O ponto está a mais de 25 metros de qualquer fibra.")
 
     except Exception as e:
         st.error(f"Erro: {e}")
+
 
 
