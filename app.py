@@ -79,7 +79,7 @@ def check_proximity(point, lines, threshold_meters):
 # ======================
 st.set_page_config(page_title="Validador de Plus Code", layout="centered")
 
-st.title("🔍 Validador de Plus Code na Rede KML")
+st.title("🔍 Validador de Projetos")
 plus_code_input = st.text_input("Digite o Plus Code (formato curto, ex: 8JV4+8XR)").strip().upper()
 
 if plus_code_input:
@@ -101,9 +101,10 @@ if plus_code_input:
 
         # Resultado
         if is_close:
-            st.success(f"✅ O ponto está a {dist_m:.1f} metros da linha {line_index}")
+            st.success(f"✅ O ponto está a {dist_m:.1f} metros da fibra mais proxima")
         else:
-            st.error("❌ O ponto está a mais de 100 metros de qualquer linha.")
+            st.error("❌ O ponto está a mais de 100 metros de qualquer fibra.")
 
     except Exception as e:
         st.error(f"Erro: {e}")
+
