@@ -29,7 +29,7 @@ def download_kml(file_id, output):
 # PLUS CODE → Coordenada
 # ======================
 def decode_plus_code(plus_code, locality_name):
-    geolocator = Nominatim(user_agent="geoapi")
+    geolocator = Nominatim(user_agent="geoapi", timeout=10)
     location = geolocator.geocode(locality_name)
     if location is None:
         raise ValueError(f"Cidade de referência '{locality_name}' não encontrada.")
@@ -107,4 +107,5 @@ if plus_code_input:
 
     except Exception as e:
         st.error(f"Erro: {e}")
+
 
