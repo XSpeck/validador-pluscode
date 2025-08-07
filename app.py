@@ -149,7 +149,7 @@ st.subheader("📋 Atendemos UTP / FTTA")
 try:
     download_file(csv_ids["utp"], csv_files["utp"])
     df_utp = pd.read_csv(csv_files["utp"])
-    search_utp = st.text_input("🔎 Buscar").lower()
+    search_utp = st.text_input("🔎 Buscar", key="search_utp").lower()
     filtered_utp = df_utp[df_utp.apply(lambda row: search_utp in row.astype(str).str.lower().to_string(), axis=1)]
     st.dataframe(filtered_utp, use_container_width=True)
 except Exception as e:
@@ -162,9 +162,10 @@ st.subheader("📋 Prédios sem viabilidade")
 try:
     download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
     df_sem_viab = pd.read_csv(csv_files["sem_viabilidade"])
-    search_sem_viab = st.text_input("🔎 Buscar").lower()
+    search_sem_viab = st.text_input("🔎 Buscar", key="search_sem_viab").lower()
     filtered_sem_viab = df_sem_viab[df_sem_viab.apply(lambda row: search_sem_viab in row.astype(str).str.lower().to_string(), axis=1)]
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
