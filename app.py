@@ -10,6 +10,20 @@ import gdown
 import pandas as pd
 
 # ======================
+# BOTÃO DE ATUALIZAR
+# ======================
+if "refresh_clicked" not in st.session_state:
+    st.session_state.refresh_clicked = False
+
+if st.button("🔄 Atualizar todos os arquivos"):
+    st.cache_data.clear()
+    st.session_state.refresh_clicked = True
+
+if st.session_state.refresh_clicked:
+    st.session_state.refresh_clicked = False
+    st.experimental_rerun()
+    
+# ======================
 # CONFIGURAÇÕES
 # ======================
 file_id_kml = "1tuxvnc-2FHVVjtLHJ34LFpU3Uq5jiVul"
@@ -25,20 +39,6 @@ csv_files = {
     "utp": "utp.csv",
     "sem_viabilidade": "sem_viabilidade.csv"
 }
-
-# ======================
-# BOTÃO DE ATUALIZAR
-# ======================
-if "refresh_clicked" not in st.session_state:
-    st.session_state.refresh_clicked = False
-
-if st.button("🔄 Atualizar todos os arquivos"):
-    st.cache_data.clear()
-    st.session_state.refresh_clicked = True
-
-if st.session_state.refresh_clicked:
-    st.session_state.refresh_clicked = False
-    st.experimental_rerun()
     
 # ======================
 # FUNÇÕES DE DOWNLOAD
@@ -166,6 +166,7 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
 
