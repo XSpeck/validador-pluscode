@@ -15,9 +15,12 @@ import pandas as pd
 if "refresh_clicked" not in st.session_state:
     st.session_state.refresh_clicked = False
 
-if st.button("🔄 Atualizar todos os arquivos"):
+def on_refresh():
     st.cache_data.clear()
     st.session_state.refresh_clicked = True
+
+if st.button("🔄 Atualizar todos os arquivos", on_click=on_refresh):
+    pass
 
 if st.session_state.refresh_clicked:
     st.session_state.refresh_clicked = False
@@ -166,6 +169,7 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
 
