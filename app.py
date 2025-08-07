@@ -105,7 +105,7 @@ def check_proximity(point, lines):
 # ======================
 # APP STREAMLIT
 # ======================
-st.set_page_config(page_title="Validador de Plus Code", layout="centered")
+st.set_page_config(page_title="Validador de Projetos", layout="centered")
 
 st.title("🔍 Validador de Projetos")
 plus_code_input = st.text_input("Digite o Plus Code (formato curto, ex: 8JV4+8XR)").strip().upper()
@@ -167,5 +167,6 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
