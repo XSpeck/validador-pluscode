@@ -27,6 +27,13 @@ csv_files = {
 }
 
 # ======================
+# BOTÃO DE ATUALIZAR
+# ======================
+if st.button("🔄 Atualizar Dados"):
+    st.cache_data.clear()
+    st.experimental_rerun()
+    
+# ======================
 # FUNÇÕES DE DOWNLOAD
 # ======================
 @st.cache_data
@@ -152,5 +159,6 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
