@@ -19,12 +19,10 @@ def on_refresh():
     st.cache_data.clear()
     st.session_state.refresh_clicked = True
 
-if st.button("🔄 Atualizar todos os arquivos", on_click=on_refresh):
-    pass
+st.button("🔄 Atualizar todos os arquivos", on_click=on_refresh)
 
 if st.session_state.refresh_clicked:
-    st.session_state.refresh_clicked = False
-    st.experimental_rerun()
+    st.info("Arquivos atualizados! Por favor, atualize (F5) a página para aplicar as mudanças.")
     
 # ======================
 # CONFIGURAÇÕES
@@ -169,6 +167,7 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
 
