@@ -117,7 +117,7 @@ if plus_code_input:
         if dist_m is not None:
             if dist_m <= 25:
                 st.success(f"✅ Temos viabilidade. O ponto está a {dist_m:.1f} metros da fibra (linha {line_index}).")
-            elif dist_m <= 600:
+            elif dist_m <= 500:
                 st.warning(f"⚠️ Possível viabilidade. O ponto está a {dist_m:.1f} metros da fibra (linha {line_index}). Entre em contato para verificar.")
             else:
                 st.error(f"❌ Não temos viabilidade. O ponto está a {dist_m:.1f} metros da fibra mais próxima.")
@@ -152,3 +152,4 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
