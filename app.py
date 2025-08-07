@@ -145,7 +145,7 @@ if plus_code_input:
 # ======================
 # TABELA 1: Atendemos UTP
 # ======================
-st.subheader("📋 Atendemos UTP")
+st.subheader("📋 Atendemos UTP / FTTA")
 try:
     download_file(csv_ids["utp"], csv_files["utp"])
     df_utp = pd.read_csv(csv_files["utp"])
@@ -167,10 +167,3 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
-
-
-
-
-
-
-
