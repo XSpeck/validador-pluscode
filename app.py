@@ -29,8 +29,15 @@ csv_files = {
 # ======================
 # BOTÃO DE ATUALIZAR
 # ======================
-if st.button("🔄 Atualizar Dados"):
+if "refresh_clicked" not in st.session_state:
+    st.session_state.refresh_clicked = False
+
+if st.button("🔄 Atualizar todos os arquivos"):
     st.cache_data.clear()
+    st.session_state.refresh_clicked = True
+
+if st.session_state.refresh_clicked:
+    st.session_state.refresh_clicked = False
     st.experimental_rerun()
     
 # ======================
@@ -159,6 +166,7 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
 
