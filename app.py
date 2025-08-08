@@ -116,6 +116,9 @@ if plus_code_input:
         download_file(file_id_kml, kml_path)
         lines = load_lines_from_kml(kml_path)
         point_latlon = decode_plus_code(plus_code_input, reference_area)
+        lat, lon = point_latlon
+        st.code(f"📍 Coordenadas: {lat:.6f}, {lon:.6f}", language="markdown")
+        
         dist_m, line_index = check_proximity(point_latlon, lines)
 
         # Mapa
@@ -167,6 +170,7 @@ try:
     st.dataframe(filtered_sem_viab, use_container_width=True)
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
 
