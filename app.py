@@ -102,7 +102,7 @@ def reverse_geocode(lat, lon):
         return f"Erro na consulta LocationIQ: {e}"
 
 st.set_page_config(page_title="Validador de Projetos", layout="centered")
-st.title("🔍 Validador de Projetos com Plus Code")
+st.title("🔍 Validador de Projetos")
 
 plus_code_input = st.text_input("Digite o Plus Code (ex: 8JV4+8XR)").strip().upper()
 
@@ -157,5 +157,6 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
 
