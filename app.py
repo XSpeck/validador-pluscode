@@ -112,6 +112,7 @@ if plus_code_input:
         download_file(csv_ids["utp"], csv_files["utp"])
         download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
         lines = load_lines_from_kml(kml_path)
+        lines = [line for line in lines if line and len(line) > 0]
 
         lat, lon = pluscode_to_coords(plus_code_input)
         coords_str = f"{lat:.6f}, {lon:.6f}"
@@ -156,4 +157,5 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
 
