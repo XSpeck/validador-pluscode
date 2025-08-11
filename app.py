@@ -15,7 +15,8 @@ import requests
 LOCATIONIQ_KEY = "pk.66f355328aaad40fe69b57c293f66815"
 file_id_kml = "1tuxvnc-2FHVVjtLHJ34LFpU3Uq5jiVul"
 kml_path = "REDE_CLONIX.kml"
-reference_area = "Criciúma, Brazil"
+reference_lat = -28.6775   # Criciúma latitude para completar plus code curto
+reference_lon = -49.3696   # Criciúma longitude para completar plus code curto
 
 csv_ids = {
     "utp": "1UTp5gbAqppEhpIIp8qUvF83KARvwKego",
@@ -45,6 +46,9 @@ def download_file(file_id, output):
     return output
 
 def pluscode_to_coords(pluscode):
+    # Completa plus code curto
+    if not olc.isFull(pluscode):
+        pluscode = olc.recoverNearest(pluscode, reference_lat, reference_lon)
     decoded = olc.decode(pluscode)
     lat = (decoded.latitudeLo + decoded.latitudeHi) / 2
     lon = (decoded.longitudeLo + decoded.longitudeHi) / 2
@@ -74,6 +78,18 @@ def check_proximity(point, lines):
             closest = (dist, i+1)
     return closest if closest else (None, None)
 
+def reverse_geocode(lat, lon):
+    url = f"https://us1.locationiq.com/v1/reverse?key={LOCATIONIQ_KEY}&lat={lat}&lon={lon}&format=json"
+    try:
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            data = resp.json()
+            return data.get("display_name", "Endereço não encontrado")
+        else:
+            return f"Erro na consulta LocationIQ: {resp.status_code}"
+    except Exception as e:
+        return f"Erro na consulta LocationIQ: {e}"
+
 st.set_page_config(page_title="Validador de Projetos", layout="centered")
 st.title("🔍 Validador de Projetos com Plus Code")
 
@@ -88,7 +104,10 @@ if plus_code_input:
 
         lat, lon = pluscode_to_coords(plus_code_input)
         coords_str = f"{lat:.6f}, {lon:.6f}"
-        st.text_input("📍 Coordenadas:", value=coords_str, disabled=True)
+        st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
+
+        endereco = reverse_geocode(lat, lon)
+        st.markdown(f"🏠 **Endereço aproximado:** {endereco}")
 
         dist_m, _ = check_proximity((lat, lon), lines)
 
@@ -100,13 +119,13 @@ if plus_code_input:
 
         if dist_m is not None:
             if dist_m <= 25:
-                st.success(f"Temos viabilidade! Distância: {dist_m:.1f} m")
+                st.success(f"✅ Temos viabilidade! Distância: {dist_m:.1f} metros")
             elif dist_m <= 500:
-                st.warning(f"Possível viabilidade. Distância: {dist_m:.1f} m")
+                st.warning(f"⚠️ Possível viabilidade. Distância: {dist_m:.1f} metros")
             else:
-                st.error(f"Não temos viabilidade. Distância: {dist_m:.1f} m")
+                st.error(f"❌ Não temos viabilidade. Distância: {dist_m:.1f} metros")
         else:
-            st.error("Não foi possível calcular a distância.")
+            st.error("❌ Não foi possível calcular a distância.")
 
     except Exception as e:
         st.error(f"Erro: {e}")
