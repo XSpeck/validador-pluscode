@@ -71,12 +71,23 @@ def check_proximity(point, lines):
     pt = Point(point[1], point[0])
     closest = None
     for i, line in enumerate(lines):
-        ln = LineString([(lon, lat) for lat, lon in line])
-        cp = ln.interpolate(ln.project(pt))
-        dist = geodesic((point[0], point[1]), (cp.y, cp.x)).meters
-        if closest is None or dist < closest[0]:
-            closest = (dist, i+1)
+        if not line:
+            continue  # pula linhas vazias
+        try:
+            ln = LineString([(lon, lat) for lat, lon in line])
+            if ln.is_empty:
+                continue
+            cp = ln.interpolate(ln.project(pt))
+            if cp is None:
+                continue
+            dist = geodesic((point[0], point[1]), (cp.y, cp.x)).meters
+            if closest is None or dist < closest[0]:
+                closest = (dist, i+1)
+        except Exception as e:
+            # Ignora linhas problemáticas e segue
+            continue
     return closest if closest else (None, None)
+
 
 def reverse_geocode(lat, lon):
     url = f"https://us1.locationiq.com/v1/reverse?key={LOCATIONIQ_KEY}&lat={lat}&lon={lon}&format=json"
@@ -145,3 +156,4 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
+
