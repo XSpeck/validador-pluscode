@@ -45,23 +45,6 @@ def download_file(file_id, output):
     gdown.download(url, output, quiet=True, fuzzy=True)
     return output
 
-@st.cache_data
-def load_all_files():
-    download_file(file_id_kml, kml_path)
-    download_file(csv_ids["utp"], csv_files["utp"])
-    download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
-    lines = load_lines_from_kml(kml_path)
-    lines = [line for line in lines if line and len(line) > 0]
-    return lines, pd.read_csv(csv_files["utp"]), pd.read_csv(csv_files["sem_viabilidade"])
-
-def pluscode_to_coords(pluscode):
-    if not olc.isFull(pluscode):
-        pluscode = olc.recoverNearest(pluscode, reference_lat, reference_lon)
-    decoded = olc.decode(pluscode)
-    lat = (decoded.latitudeLo + decoded.latitudeHi) / 2
-    lon = (decoded.longitudeLo + decoded.longitudeHi) / 2
-    return lat, lon
-
 def load_lines_from_kml(path):
     namespaces = {'kml': 'http://www.opengis.net/kml/2.2'}
     tree = ET.parse(path)
@@ -74,6 +57,25 @@ def load_lines_from_kml(path):
             coords = [(float(c.split(',')[1]), float(c.split(',')[0])) for c in raw if len(c.split(','))>=2]
             lines.append(coords)
     return lines
+
+@st.cache_data
+def load_all_files():
+    download_file(file_id_kml, kml_path)
+    download_file(csv_ids["utp"], csv_files["utp"])
+    download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
+    lines = load_lines_from_kml(kml_path)
+    lines = [line for line in lines if line and len(line) > 0]
+    df_utp = pd.read_csv(csv_files["utp"])
+    df_sem = pd.read_csv(csv_files["sem_viabilidade"])
+    return lines, df_utp, df_sem
+
+def pluscode_to_coords(pluscode):
+    if not olc.isFull(pluscode):
+        pluscode = olc.recoverNearest(pluscode, reference_lat, reference_lon)
+    decoded = olc.decode(pluscode)
+    lat = (decoded.latitudeLo + decoded.latitudeHi) / 2
+    lon = (decoded.longitudeLo + decoded.longitudeHi) / 2
+    return lat, lon
 
 def check_proximity(point, lines):
     pt = Point(point[1], point[0])
@@ -110,7 +112,7 @@ def reverse_geocode(lat, lon):
 st.set_page_config(page_title="Validador de Projetos", layout="centered")
 st.title("🔍 Validador de Projetos")
 
-# Carrega todos os arquivos uma única vez
+# Carrega arquivos e KML apenas uma vez
 try:
     lines, df_utp, df_sem = load_all_files()
 except Exception as e:
@@ -125,12 +127,24 @@ if plus_code_input:
         coords_str = f"{lat:.6f}, {lon:.6f}"
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
 
-        # Botão que abre diretamente no Google Earth Web
-        earth_url = f"https://earth.google.com/web/@{lat},{lon},18000a,0d,0y,0h,0t,0r"
+        # Google Earth Web com KML
+        altitude = 18000  # altura da câmera em metros
+        kml_url = f"https://drive.google.com/uc?export=download&id={file_id_kml}"
+        earth_url = f"https://earth.google.com/web/@{lat},{lon},{altitude}a,0d,0y,0h,0t,0r/data={kml_url}"
+
+        # Google Maps
+        maps_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
+
+        # Exibe os botões lado a lado
         st.markdown(
+            f'<div style="display:flex; gap:10px;">'
             f'<a href="{earth_url}" target="_blank" '
-            f'style="display:inline-block;padding:0.5em 1em;background-color:#4CAF50;'
-            f'color:white;text-decoration:none;border-radius:5px;">🌍 Abrir no Google Earth</a>',
+            f'style="flex:1;padding:0.5em 1em;background-color:#4CAF50;'
+            f'color:white;text-decoration:none;border-radius:5px;text-align:center;">🌍 Abrir no Google Earth</a>'
+            f'<a href="{maps_url}" target="_blank" '
+            f'style="flex:1;padding:0.5em 1em;background-color:#4285F4;'
+            f'color:white;text-decoration:none;border-radius:5px;text-align:center;">🗺️ Abrir no Google Maps</a>'
+            f'</div>',
             unsafe_allow_html=True
         )
 
@@ -171,7 +185,3 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
-
-
-
-
