@@ -137,7 +137,8 @@ if plus_code_input:
         )
 
         endereco = reverse_geocode(lat, lon)
-        st.markdown(f"🏠 **Endereço aproximado:** {endereco}")
+        endereco_simples = ", ".join(endereco.split(",")[:3])
+        st.markdown(f"🏠 **Endereço aproximado:** {endereco_simples}")
 
         dist_m, _ = check_proximity((lat, lon), lines)
 
@@ -173,5 +174,6 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
 
