@@ -15,8 +15,8 @@ import requests
 LOCATIONIQ_KEY = "pk.66f355328aaad40fe69b57c293f66815"
 file_id_kml = "1tuxvnc-2FHVVjtLHJ34LFpU3Uq5jiVul"
 kml_path = "REDE_CLONIX.kml"
-reference_lat = -28.6775   # Criciúma latitude para completar plus code curto
-reference_lon = -49.3696   # Criciúma longitude para completar plus code curto
+reference_lat = -28.6775
+reference_lon = -49.3696
 
 csv_ids = {
     "utp": "1UTp5gbAqppEhpIIp8qUvF83KARvwKego",
@@ -45,8 +45,16 @@ def download_file(file_id, output):
     gdown.download(url, output, quiet=True, fuzzy=True)
     return output
 
+@st.cache_data
+def load_all_files():
+    download_file(file_id_kml, kml_path)
+    download_file(csv_ids["utp"], csv_files["utp"])
+    download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
+    lines = load_lines_from_kml(kml_path)
+    lines = [line for line in lines if line and len(line) > 0]
+    return lines, pd.read_csv(csv_files["utp"]), pd.read_csv(csv_files["sem_viabilidade"])
+
 def pluscode_to_coords(pluscode):
-    # Completa plus code curto
     if not olc.isFull(pluscode):
         pluscode = olc.recoverNearest(pluscode, reference_lat, reference_lon)
     decoded = olc.decode(pluscode)
@@ -72,7 +80,7 @@ def check_proximity(point, lines):
     closest = None
     for i, line in enumerate(lines):
         if not line:
-            continue  # pula linhas vazias
+            continue
         try:
             ln = LineString([(lon, lat) for lat, lon in line])
             if ln.is_empty:
@@ -83,11 +91,9 @@ def check_proximity(point, lines):
             dist = geodesic((point[0], point[1]), (cp.y, cp.x)).meters
             if closest is None or dist < closest[0]:
                 closest = (dist, i+1)
-        except Exception as e:
-            # Ignora linhas problemáticas e segue
+        except Exception:
             continue
     return closest if closest else (None, None)
-
 
 def reverse_geocode(lat, lon):
     url = f"https://us1.locationiq.com/v1/reverse?key={LOCATIONIQ_KEY}&lat={lat}&lon={lon}&format=json"
@@ -104,25 +110,26 @@ def reverse_geocode(lat, lon):
 st.set_page_config(page_title="Validador de Projetos", layout="centered")
 st.title("🔍 Validador de Projetos")
 
+# Carrega todos os arquivos uma única vez
+try:
+    lines, df_utp, df_sem = load_all_files()
+except Exception as e:
+    st.error(f"Erro ao carregar arquivos: {e}")
+    st.stop()
+
 plus_code_input = st.text_input("Digite o Plus Code (ex: 8JV4+8XR)").strip().upper()
 
 if plus_code_input:
     try:
-        download_file(file_id_kml, kml_path)
-        download_file(csv_ids["utp"], csv_files["utp"])
-        download_file(csv_ids["sem_viabilidade"], csv_files["sem_viabilidade"])
-        lines = load_lines_from_kml(kml_path)
-        lines = [line for line in lines if line and len(line) > 0]
-
         lat, lon = pluscode_to_coords(plus_code_input)
         coords_str = f"{lat:.6f}, {lon:.6f}"
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
-        
+
         # Botão para abrir Google Earth Web
         earth_url = f"https://earth.google.com/web/@{lat},{lon},100m"
         if st.button("🌍 Abrir no Google Earth"):
             st.markdown(f'<a href="{earth_url}" target="_blank">Clique aqui para abrir no Google Earth</a>', unsafe_allow_html=True)
-        
+
         endereco = reverse_geocode(lat, lon)
         st.markdown(f"🏠 **Endereço aproximado:** {endereco}")
 
@@ -148,21 +155,15 @@ if plus_code_input:
         st.error(f"Erro: {e}")
 
 st.subheader("Atendemos UTP")
+search_utp = st.text_input("🔎 Buscar UTP", key="search_utp").lower()
 try:
-    df_utp = pd.read_csv(csv_files["utp"])
-    search_utp = st.text_input("🔎 Buscar UTP", key="search_utp").lower()
     st.dataframe(df_utp[df_utp.apply(lambda r: search_utp in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
-    st.warning(f"Erro ao carregar utp.csv: {e}")
+    st.warning(f"Erro ao filtrar UTP: {e}")
 
 st.subheader("Prédios sem viabilidade")
+search_sem = st.text_input("🔎 Buscar Prédios", key="search_sem_viab").lower()
 try:
-    df_sem = pd.read_csv(csv_files["sem_viabilidade"])
-    search_sem = st.text_input("🔎 Buscar Prédios", key="search_sem_viab").lower()
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
-    st.warning(f"Erro ao carregar sem_viabilidade.csv: {e}")
-
-
-
-
+    st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
