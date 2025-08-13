@@ -27,6 +27,9 @@ csv_files = {
     "sem_viabilidade": "sem_viabilidade.csv"
 }
 
+# Link raw do KML hospedado no GitHub (funciona no Google Earth Web)
+kml_github_url = "https://raw.githubusercontent.com/XSpeck/validador-pluscode/refs/heads/main/REDE%20CLONIX.kml"
+
 if "refresh_clicked" not in st.session_state:
     st.session_state.refresh_clicked = False
 
@@ -127,10 +130,9 @@ if plus_code_input:
         coords_str = f"{lat:.6f}, {lon:.6f}"
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
 
-        # Google Earth Web com KML
+        # Google Earth Web com KML hospedado no GitHub
         altitude = 18000  # altura da câmera em metros
-        kml_url = f"https://drive.google.com/uc?export=download&id={file_id_kml}"
-        earth_url = f"https://earth.google.com/web/@{lat},{lon},{altitude}a,0d,0y,0h,0t,0r/data={kml_url}"
+        earth_url = f"https://earth.google.com/web/@{lat},{lon},{altitude}a,0d,0y,0h,0t,0r/data={kml_github_url}"
 
         # Google Maps
         maps_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
@@ -185,3 +187,4 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
