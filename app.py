@@ -27,9 +27,6 @@ csv_files = {
     "sem_viabilidade": "sem_viabilidade.csv"
 }
 
-# Link raw do KML hospedado no GitHub (funciona no Google Earth Web)
-kml_github_url = "https://raw.githubusercontent.com/XSpeck/validador-pluscode/refs/heads/main/REDE%20CLONIX.kml"
-
 if "refresh_clicked" not in st.session_state:
     st.session_state.refresh_clicked = False
 
@@ -130,23 +127,12 @@ if plus_code_input:
         coords_str = f"{lat:.6f}, {lon:.6f}"
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
 
-        # Google Earth Web com KML hospedado no GitHub
-        altitude = 18000  # altura da câmera em metros
-        earth_url = f"https://earth.google.com/web/@{lat},{lon},{altitude}a,0d,0y,0h,0t,0r/data={kml_github_url}"
-
-        # Google Maps
+       # Botão Google Maps
         maps_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
-
-        # Exibe os botões lado a lado
         st.markdown(
-            f'<div style="display:flex; gap:10px;">'
-            f'<a href="{earth_url}" target="_blank" '
-            f'style="flex:1;padding:0.5em 1em;background-color:#4CAF50;'
-            f'color:white;text-decoration:none;border-radius:5px;text-align:center;">🌍 Abrir no Google Earth</a>'
             f'<a href="{maps_url}" target="_blank" '
-            f'style="flex:1;padding:0.5em 1em;background-color:#4285F4;'
-            f'color:white;text-decoration:none;border-radius:5px;text-align:center;">🗺️ Abrir no Google Maps</a>'
-            f'</div>',
+            f'style="display:inline-block;padding:0.5em 1em;background-color:#4285F4;'
+            f'color:white;text-decoration:none;border-radius:5px;">🗺️ Abrir no Google Maps</a>',
             unsafe_allow_html=True
         )
 
@@ -187,4 +173,5 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
