@@ -142,9 +142,7 @@ if plus_code_input:
         endereco_simples = ", ".join(endereco.split(",")[:3])
         st.markdown(f"🏠 **Endereço aproximado:** {endereco_simples}")
 
-        dist_m, _ = check_proximity((lat, lon), lines)
-
-        
+        dist_m, _ = check_proximity((lat, lon), lines)        
 
         if dist_m is not None:
             if dist_m <= 25:
@@ -160,7 +158,7 @@ if plus_code_input:
         for line in lines:
             folium.PolyLine(locations=line, color="blue").add_to(m)
         folium.Marker(location=[lat, lon], popup=plus_code_input, icon=folium.Icon(color="red")).add_to(m)
-        st_folium(m, height=500)
+        st_folium(m, height=300)
 
     except Exception as e:
         st.error(f"Erro: {e}")
@@ -178,6 +176,7 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
 
 
