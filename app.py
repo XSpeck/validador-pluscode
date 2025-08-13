@@ -125,10 +125,14 @@ if plus_code_input:
         coords_str = f"{lat:.6f}, {lon:.6f}"
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
 
-        # Botão para abrir Google Earth Web
+        # Botão que abre diretamente no Google Earth Web
         earth_url = f"https://earth.google.com/web/@{lat},{lon},100m"
-        if st.button("🌍 Abrir no Google Earth"):
-            st.markdown(f'<a href="{earth_url}" target="_blank">Clique aqui para abrir no Google Earth</a>', unsafe_allow_html=True)
+        st.markdown(
+            f'<a href="{earth_url}" target="_blank" '
+            f'style="display:inline-block;padding:0.5em 1em;background-color:#4CAF50;'
+            f'color:white;text-decoration:none;border-radius:5px;">🌍 Abrir no Google Earth</a>',
+            unsafe_allow_html=True
+        )
 
         endereco = reverse_geocode(lat, lon)
         st.markdown(f"🏠 **Endereço aproximado:** {endereco}")
@@ -167,3 +171,4 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
