@@ -125,9 +125,9 @@ if plus_code_input:
     try:
         lat, lon = pluscode_to_coords(plus_code_input)
         coords_str = f"{lat:.6f}, {lon:.6f}"
-        
-        st.code(coords_str, language="")
         st.markdown("📍 Coordenadas (copie e cole em outro app)")
+        st.code(coords_str, language="")
+        
 
        # Botão Google Maps
         maps_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
@@ -176,6 +176,7 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
 
 
