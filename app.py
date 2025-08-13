@@ -144,11 +144,7 @@ if plus_code_input:
 
         dist_m, _ = check_proximity((lat, lon), lines)
 
-        m = folium.Map(location=[lat, lon], zoom_start=17)
-        for line in lines:
-            folium.PolyLine(locations=line, color="blue").add_to(m)
-        folium.Marker(location=[lat, lon], popup=plus_code_input, icon=folium.Icon(color="red")).add_to(m)
-        st_folium(m, height=500)
+        
 
         if dist_m is not None:
             if dist_m <= 25:
@@ -159,6 +155,12 @@ if plus_code_input:
                 st.error(f"❌ Não temos viabilidade. Distância: {dist_m:.1f} metros")
         else:
             st.error("❌ Não foi possível calcular a distância.")
+
+        m = folium.Map(location=[lat, lon], zoom_start=17)
+        for line in lines:
+            folium.PolyLine(locations=line, color="blue").add_to(m)
+        folium.Marker(location=[lat, lon], popup=plus_code_input, icon=folium.Icon(color="red")).add_to(m)
+        st_folium(m, height=500)
 
     except Exception as e:
         st.error(f"Erro: {e}")
@@ -176,6 +178,7 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
 
 
