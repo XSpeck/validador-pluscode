@@ -126,7 +126,7 @@ if plus_code_input:
         st.text_input("📍 Coordenadas (copie e cole em outro app)", value=coords_str, disabled=True)
 
         # Botão que abre diretamente no Google Earth Web
-        earth_url = f"https://earth.google.com/web/@{lat},{lon},18000m"
+        earth_url = f"https://earth.google.com/web/@{lat},{lon},18000a,0d,0y,0h,0t,0r"
         st.markdown(
             f'<a href="{earth_url}" target="_blank" '
             f'style="display:inline-block;padding:0.5em 1em;background-color:#4CAF50;'
@@ -171,6 +171,7 @@ try:
     st.dataframe(df_sem[df_sem.apply(lambda r: search_sem in r.astype(str).str.lower().to_string(), axis=1)])
 except Exception as e:
     st.warning(f"Erro ao filtrar sem_viabilidade: {e}")
+
 
 
 
